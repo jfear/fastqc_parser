@@ -1,18 +1,18 @@
-Basic Statistics: 
+Basic_Statistics: 
     status: pass
-    table: 
-        """#Measure	Value
+    table: |
+        Measure	Value
         Filename	A1_151020_run0437.fastq.gz
         File type	Conventional base calls
         Encoding	Sanger / Illumina 1.9
         Total Sequences	5950965
         Sequences flagged as poor quality	0
         Sequence length	75
-        %GC	47"""
-Per base sequence quality:
+        %GC	47
+Per_base_sequence_quality:
     status: pass
-    table:
-        """#Base	Mean	Median	Lower Quartile	Upper Quartile	10th Percentile	90th Percentile
+    table: |
+        Base	Mean	Median	Lower Quartile	Upper Quartile	10th Percentile	90th Percentile
         1	32.463430384819944	34.0	31.0	34.0	31.0	34.0
         2	32.625442260204856	34.0	31.0	34.0	31.0	34.0
         3	32.68463148413745	34.0	31.0	34.0	31.0	34.0
@@ -33,11 +33,11 @@ Per base sequence quality:
         18	39.22688118649664	41.0	39.0	41.0	36.0	41.0
         19	39.24896247919455	41.0	39.0	41.0	36.0	41.0
         20	39.203684108375704	41.0	39.0	41.0	36.0	41.0
-        """
-Per tile sequence quality:
+
+Per_tile_sequence_quality:
     status: pass
-    table:
-        """#Tile	Base	Mean
+    table: |
+        Tile	Base	Mean
         1101	1	0.33014497277595467
         1101	2	0.37301589034188254
         1101	3	0.423637974888301
@@ -61,11 +61,10 @@ Per tile sequence quality:
         1101	21	0.5259144622781449
         1101	22	0.6041870020375342
         1101	23	0.5907125389942038
-        """
-Per sequence quality scores:
+Per_sequence_quality_scores:
     status: pass
-    table:
-        """#Quality	Count
+    table: |
+        Quality	Count
         2	128.0
         3	4.0
         4	6.0
@@ -85,11 +84,10 @@ Per sequence quality scores:
         18	5739.0
         19	6427.0
         20	7363.0
-        """
-Per base sequence content:
+Per_base_sequence_content:
     status: fail
-    table:
-        """#Base	G	A	T	C
+    table: |
+        Base	G	A	T	C
         1	40.25733994882886	9.959306086484746	8.594691852399329	41.18866211228707
         2	25.053505914554552	11.546657023054596	39.83370818842148	23.566128873969372
         3	23.485468323204724	14.766647090009771	25.31429776515238	36.43358682163313
@@ -110,11 +108,10 @@ Per base sequence content:
         18	22.494294195993316	24.869105108790887	29.83635575986253	22.800244935353266
         19	23.449373336929387	25.732818122775047	27.98567963347121	22.832128906824355
         20	22.128404242213083	25.396738959622134	30.05079650322136	22.424060294943427
-        """
-Per sequence GC content:
+Per_sequence_GC_content:
     status: fail
-    table:
-        """#GC Content	Count
+    table: |
+        GC Content	Count
         0	8.0
         1	6.5
         2	11.0
@@ -136,11 +133,10 @@ Per sequence GC content:
         18	43255.0
         19	63828.5
         20	66955.0
-        """
-Per base N content:
+Per_base_N_content:
     status: pass
-    table:
-        """#Base	N-Count
+    table: |
+        Base	N-Count
         1	0.14372458920528017
         2	0.003713683411009811
         3	0.0
@@ -161,17 +157,16 @@ Per base N content:
         18	1.1762798134420217E-4
         19	0.0
         20	0.019257380945779383
-        """
-Sequence Length Distribution:
+Sequence_Length_Distribution:
     status: pass
-    table:
-        """#Length	Count
+    table: |
+        Length	Count
         75	5950965.0
-        """
-Sequence Duplication Levels:
+Sequence_Duplication_Levels:
     status: fail
-    table:
-        """#Duplication Level	Percentage of deduplicated	Percentage of total
+    deup: 45.39595796761549
+    table: |
+        Duplication Level	Percentage of deduplicated	Percentage of total
         1	77.40434244938285	35.13844276343099
         2	11.736581289696666	10.655867018211444
         3	4.045999024735053	5.510160049916571
@@ -188,11 +183,10 @@ Sequence Duplication Levels:
         >1k	0.0036303805411749333	3.7100543035472224
         >5k	5.186257915924774E-4	1.6916015266004378
         >10k+	6.297598897908655E-4	6.589325242746293
-        """
-Overrepresented sequences:
+Overrepresented_sequences:
     status: fail
-    table: 
-        """#Sequence	Count	Percentage	Possible Source
+    table: |
+        Sequence	Count	Percentage	Possible Source
         GTCCTTTCGTACTAAAATATCACAATTTTTTAAAGATAGAAACCAACCTGGCTTACACCGGTTTGAACTCAGATC	79541	1.3366067520141691	No Hit
         GTCCAACCATTCATTCCAGCCTTCAATTAAAAGACTAATGATTATGCTACCTTTGCACAGTCAAAATACTGCGGC	46012	0.7731855253727757	No Hit
         GGGTCTTCTCGTCTTTTAAATAAATTTTAGCTTTTTGACTAAAAAATAAAATTCTATAAAAATTTTAAATGAAAC	31007	0.5210415453628109	No Hit
@@ -204,11 +198,10 @@ Overrepresented sequences:
         CTTTTAAATAAATTTTAGCTTTTTGACTAAAAAATAAAATTCTATAAAAATTTTAAATGAAACAGTTAATATTTC	18444	0.3099329268446378	No Hit
         CTCAGATCATGTAAGAATTTAAAAGTCGAACAGACTTAAAATTTGAACGGCTACACCCAAAATTATATCTTAATC	16671	0.28013943956988485	No Hit
         CTAAAATATCACAATTTTTTAAAGATAGAAACCAACCTGGCTTACACCGGTTTGAACTCAGATCATGTAAGAATT	16470	0.27676183610557276	No Hit
-        """
-Adapter Content:
+Adapter_Content:
     status: pass
-    table: 
-        """#Position	Illumina Universal Adapter	Illumina Small RNA 3' Adapter	Illumina Small RNA 5' Adapter	Nextera Transposase Sequence	SOLID Small RNA Adapter
+    table: |
+        Position	Illumina Universal Adapter	Illumina Small RNA 3' Adapter	Illumina Small RNA 5' Adapter	Nextera Transposase Sequence	SOLID Small RNA Adapter
         1	1.6803997334886023E-4	0.0	1.680399733488602E-5	0.0	3.360799466977204E-5
         2	2.0164796801863227E-4	0.0	1.680399733488602E-5	0.0	3.360799466977204E-5
         3	4.0329593603726454E-4	0.0	1.680399733488602E-5	0.0	3.360799466977204E-5
@@ -229,11 +222,10 @@ Adapter Content:
         18	0.0032935834776376604	0.0	5.713359093861247E-4	0.0	1.3443197867908817E-4
         19	0.0033439954696423183	0.0	5.881399067210108E-4	0.0	1.3443197867908817E-4
         20	0.0033776034643120904	0.0	6.217479013907828E-4	0.0	1.3443197867908817E-4
-        """
-Kmer Content:
+Kmer_Content:
     status: fail
-    table:
-        """#Sequence	Count	PValue	Obs/Exp Max	Max Obs/Exp Position
+    table: |
+        Sequence	Count	PValue	Obs/Exp Max	Max Obs/Exp Position
         GTCCTTT	11870	0.0	48.54097	1
         CCTTTCG	12270	0.0	46.23748	3
         TCCTTTC	12420	0.0	45.81944	2
@@ -254,4 +246,3 @@ Kmer Content:
         AGATAGA	18280	0.0	30.86623	34
         TATCACA	18320	0.0	30.839857	18
         CCAACCT	18190	0.0	30.742813	43
-        """

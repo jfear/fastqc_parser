@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-from sequptools import setup
+from setuptools import setup
 
 requirements = open(os.path.join(os.path.dirname(__file__), 'requirements.txt')).readlines()
 
