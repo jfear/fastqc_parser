@@ -14,5 +14,4 @@ class DefaultTestCase(unittest.TestCase):
             self.yaml = FH.read()
 
     def test_fastqc_parser_io_read(self):
-        pass
-
+        self.assertTrue(True)
