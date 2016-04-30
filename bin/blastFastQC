@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+DESCRIPTION=""" Blast FASTQC Overrepresented Sequences.
+
+This program takes FASTQC output and blasts the overrepresented sequences.
+"""
+import argparse
+import logging
+
+from Bio.Blast.Applications import NcbiblastnCommandline
+
+from fastqc_parser.parser import FastQC
+
+
+
+def getOptions():
+    parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--input", dest='fname', action='store', required=True, help="FASTQC data file.")
+    return parser.parse_args()
+    
+
+def setLogger(logName=None, loglevel=logging.INFO):
+    logging.basicConfig(level=loglevel,format='%(asctime)s - %(levelname)s - %(message)s')
+
+def blast():
+    logging.info('Blasting')
+    query = 'GTCCTTTCGTACTAAAATATCACAATTTTTTAAAGATAGAAACCAACCTGGCTTACACCGGTTTGAACTCAGATC'
+    bn = NcbiblastnCommandline(query=query, db='nt', evalue=0.001)
+    bn()
+
+def main():
+    args = getOptions()
+    setLogger()
+    
+    # Get fastqc
+    logging.info('Importing FastQC data')
+    fastqc = FastQC(args.fname)
+
+    # blast
+    blast()
+
+
+if __name__ == '__main__':
+    main()
+    logging.info('Script Complete')
