@@ -1,0 +1,4 @@
+biopython>=1.66
+numpy>=1.10.4
+pandas>=0.17.1
+PyYAML>=3.11

@@ -3,40 +3,123 @@ DESCRIPTION=""" Blast FASTQC Overrepresented Sequences.
 
 This program takes FASTQC output and blasts the overrepresented sequences.
 """
+import os
 import argparse
 import logging
+import tempfile
+
+import numpy as np
+import pandas as pd
 
 from Bio.Blast.Applications import NcbiblastnCommandline
+from Bio.Blast import NCBIXML
 
 from fastqc_parser.parser import FastQC
 
-
+TMPDIR = os.getenv('TMPDIR')
 
 def getOptions():
     parser = argparse.ArgumentParser(description=DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--input", dest='fname', action='store', required=True, help="FASTQC data file.")
+    parser.add_argument("--output", dest='oname', action='store', required=True, help="Table to output.")
+    parser.add_argument("--db", dest='db', action='store', default='/fdb/blastdb/nt', help="Full path Blast Database")
+    parser.add_argument("--evalue", dest='evalue', action='store', default=0.0001, help="Blast Evalue cutoff.")
+    parser.add_argument("--debug", dest='debug', action='store_true', default=False, help="Trun on Debug messaging")
     return parser.parse_args()
     
 
 def setLogger(logName=None, loglevel=logging.INFO):
     logging.basicConfig(level=loglevel,format='%(asctime)s - %(levelname)s - %(message)s')
 
-def blast():
+
+def buildQuery(fname):
+    """ Import FASTQC results and build a FASTA query file """
+    # Import FASTQC Overrepresented sequences
+    logging.info('Importing FastQC data')
+    fastqc = FastQC(fname)
+    statTbl = fastqc['Basic_Statistics']['table']
+    seqTbl = fastqc['Overrepresented_sequences']['table']
+
+    # Create FASTQ File Name
+    fastqName = statTbl.loc[statTbl.Measure == 'Filename', 'Value'][0]
+
+    # Re-format table
+    seqTbl = seqTbl[['Sequence', 'Possible Source']].copy()
+    seqTbl.columns = ['seq', 'FASTQC_hit']
+    seqTbl['fileName'] = fastqName
+
+    # Label each sequence with: fastq.gz_##
+    seqTbl['seqID'] = seqTbl['fileName'] + '_' + [str(x) for x in seqTbl.index + 1]
+
+    # Pull out Overrepresented sequences that had no hits
+    seqNoHit = seqTbl.loc[seqTbl['FASTQC_hit'] == 'No Hit', ['seqID', 'seq']].values
+    logging.debug('seqNoHit\n{}'.format(seqNoHit))
+
+    # Write Overrepresented sequences to FASTA file
+    logging.info('Creating FASTA query for BLAST.')
+    tmp = tempfile.mktemp(dir=TMPDIR)
+    logging.debug('Temporary FASTA file: {}'.format(tmp))
+    with open(tmp, 'w') as OUT:
+        for seqID, seq in seqNoHit:
+            OUT.write(">{name}\n{seq}\n".format(name=seqID, seq=seq))
+
+    return tmp, seqTbl
+
+
+def blast(queryFile, db, evalue):
+    """ Blast sequences """
+    # Make temp file for blast results
+    tmp = tempfile.mktemp(dir=TMPDIR)
+
+    # Run blast 
     logging.info('Blasting')
-    query = 'GTCCTTTCGTACTAAAATATCACAATTTTTTAAAGATAGAAACCAACCTGGCTTACACCGGTTTGAACTCAGATC'
-    bn = NcbiblastnCommandline(query=query, db='nt', evalue=0.001)
+    bn = NcbiblastnCommandline(query=queryFile, db=db, evalue=evalue, outfmt=5, out=tmp)
     bn()
+    logging.info('Blast command: {}'.format(bn))
+
+    # Parse blast records
+    logging.info('Parsing Blast Records')
+    results = []
+    blast_records = NCBIXML.parse(open(tmp))
+    for record in blast_records:
+        if len(record.alignments) > 0:
+            aln = record.alignments[0]
+            hsp = aln.hsps[0]
+            results.append([record.query, aln.title, hsp.expect])
+        else:
+            results.append([record.query, 'No Hit', np.nan])
+
+    # Remove Blast output
+    os.remove(tmp)
+
+    dfResults = pd.DataFrame(results, columns=['seqID', 'blastHit', 'e-value'])
+    return dfResults
+
 
 def main():
     args = getOptions()
-    setLogger()
+
+    # Turn On Logging
+    if args.debug:
+        setLogger(loglevel=logging.DEBUG)
+        logging.debug('Running in DEBUG mode.')
+    else:
+        setLogger()
     
-    # Get fastqc
-    logging.info('Importing FastQC data')
-    fastqc = FastQC(args.fname)
+    # Build FASTQ Query
+    tmpFA, seqTbl = buildQuery(args.fname)
 
     # blast
-    blast()
+    results = blast(queryFile=tmpFA, db=args.db, evalue=args.evalue)
+
+    # Remove tmp query FASTA file
+    os.remove(tmpFA)
+
+    # Merge Blast Results to seqTbl
+    res = seqTbl.merge(results, how='outer', on='seqID')
+
+    # Write results to csv
+    res[['seqID', 'seq', 'FASTQC_hit', 'blastHit', 'e-value']].to_csv(args.oname, index=False)
 
 
 if __name__ == '__main__':
