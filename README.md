@@ -10,7 +10,7 @@ The blastFastQC script requires Biopython. If you have trouble installing
 Biopython I would suggest using [minconda](http://conda.pydata.org/miniconda.html).
 
 To install run the following:
-> pip install git+https://github.com/jfear/fastqc_parser
+> pip install git+https://github.com/jfear/fastqc_parser/archive/v1.0.0beta.zip
 
 To run the blast program you will also need NCBI blast installed along with the nt database.
 
