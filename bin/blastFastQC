@@ -40,30 +40,33 @@ def buildQuery(fname):
     statTbl = fastqc['Basic_Statistics']['table']
     seqTbl = fastqc['Overrepresented_sequences']['table']
 
-    # Create FASTQ File Name
-    fastqName = statTbl.loc[statTbl.Measure == 'Filename', 'Value'][0]
+    if seqTbl:
+        # Create FASTQ File Name
+        fastqName = statTbl.loc[statTbl.Measure == 'Filename', 'Value'][0]
 
-    # Re-format table
-    seqTbl = seqTbl[['Sequence', 'Possible Source']].copy()
-    seqTbl.columns = ['seq', 'FASTQC_hit']
-    seqTbl['fileName'] = fastqName
+        # Re-format table
+        seqTbl = seqTbl[['Sequence', 'Possible Source']].copy()
+        seqTbl.columns = ['seq', 'FASTQC_hit']
+        seqTbl['fileName'] = fastqName
 
-    # Label each sequence with: fastq.gz_##
-    seqTbl['seqID'] = seqTbl['fileName'] + '_' + [str(x) for x in seqTbl.index + 1]
+        # Label each sequence with: fastq.gz_##
+        seqTbl['seqID'] = seqTbl['fileName'] + '_' + [str(x) for x in seqTbl.index + 1]
 
-    # Pull out Overrepresented sequences that had no hits
-    seqNoHit = seqTbl.loc[seqTbl['FASTQC_hit'] == 'No Hit', ['seqID', 'seq']].values
-    logging.debug('seqNoHit\n{}'.format(seqNoHit))
+        # Pull out Overrepresented sequences that had no hits
+        seqNoHit = seqTbl.loc[seqTbl['FASTQC_hit'] == 'No Hit', ['seqID', 'seq']].values
+        logging.debug('seqNoHit\n{}'.format(seqNoHit))
 
-    # Write Overrepresented sequences to FASTA file
-    logging.info('Creating FASTA query for BLAST.')
-    tmp = tempfile.mktemp(dir=TMPDIR)
-    logging.debug('Temporary FASTA file: {}'.format(tmp))
-    with open(tmp, 'w') as OUT:
-        for seqID, seq in seqNoHit:
-            OUT.write(">{name}\n{seq}\n".format(name=seqID, seq=seq))
+        # Write Overrepresented sequences to FASTA file
+        logging.info('Creating FASTA query for BLAST.')
+        tmp = tempfile.mktemp(dir=TMPDIR)
+        logging.debug('Temporary FASTA file: {}'.format(tmp))
+        with open(tmp, 'w') as OUT:
+            for seqID, seq in seqNoHit:
+                OUT.write(">{name}\n{seq}\n".format(name=seqID, seq=seq))
 
-    return tmp, seqTbl
+        return tmp, seqTbl
+    else:
+        return '', seqTbl
 
 
 def blast(queryFile, db, evalue):
@@ -109,14 +112,17 @@ def main():
     # Build FASTQ Query
     tmpFA, seqTbl = buildQuery(args.fname)
 
-    # blast
-    results = blast(queryFile=tmpFA, db=args.db, evalue=args.evalue)
+    if seqTbl:
+        # blast
+        results = blast(queryFile=tmpFA, db=args.db, evalue=args.evalue)
 
-    # Remove tmp query FASTA file
-    os.remove(tmpFA)
+        # Remove tmp query FASTA file
+        os.remove(tmpFA)
 
-    # Merge Blast Results to seqTbl
-    res = seqTbl.merge(results, how='outer', on='seqID')
+        # Merge Blast Results to seqTbl
+        res = seqTbl.merge(results, how='outer', on='seqID')
+    else:
+        res = pd.DataFrame(columns=['seqID', 'seq', 'FASTQC_hit', 'blastHit', 'e-value'])
 
     # Write results to csv
     res[['seqID', 'seq', 'FASTQC_hit', 'blastHit', 'e-value']].to_csv(args.oname, index=False)

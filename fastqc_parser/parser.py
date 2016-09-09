@@ -55,8 +55,7 @@ PATTERN = """##FastQC\t[0-9\.]+
 #(?P<Sequence_Duplication_Levels_table>.*?)
 >>END_MODULE
 >>Overrepresented sequences\t(?P<Overrepresented_sequences_status>\w+)
-#(?P<Overrepresented_sequences_table>.*?)
->>END_MODULE
+#{0,1}(?P<Overrepresented_sequences_table>.*?)\n{0,1}>>END_MODULE
 >>Adapter Content\t(?P<Adapter_Content_status>\w+)
 #(?P<Adapter_Content_table>.*?)
 >>END_MODULE
@@ -87,7 +86,10 @@ class FastQC(object):
 
     def makeTable(self, tbl):
         """ """
-        return pd.read_csv(StringIO(tbl), sep='\t')
+        try:
+            return pd.read_csv(StringIO(tbl), sep='\t')
+        except:
+            return ''
 
     def __getitem__(self, name):
         return self._modules.get(name, None)
