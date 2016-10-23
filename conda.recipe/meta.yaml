@@ -11,13 +11,22 @@ build:
     skip: False
 
 requirements:
+    build:
+        - python
+        - setuptools
+        - pyyaml
+        - biopython 
+        - numpy
+        - pandas
     run:
-        - biopython >=1.66
-        - numpy >=1.10.4
-        - pandas >=0.17.1
-        - PyYAML >=3.11
-
+        - python 
+        - biopython 
+        - numpy
+        - pandas
+        - pyyaml
 test:
+    requires:
+        - pyyaml
 
 about:
     home: https://github.com/jfear/fastqc_parser.git
